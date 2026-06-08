@@ -74,6 +74,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,'Noto San
 .sel-chip.t-chem  { border-left:3px solid #c9b96a; }
 .sel-chip.t-bio   { border-left:3px solid #d490b8; }
 .sel-chip.t-earth { border-left:3px solid #d4a47a; }
+/* 회색 과목 배경색 */
+.t-gray:not(.sel) { background:#f3f4f6; border-color:#d1d5db; }
 
 /* ── DASHBOARD ── */
 .db-layout{display:grid;grid-template-columns:260px 1fr;gap:14px;align-items:start}
@@ -500,9 +502,8 @@ function renderModalList(gid){
     let bdg='';
     if(co.csat)  bdg+=`<span class="bdg bdg-csat">수능</span>`;
     if(co.abs)   bdg+=`<span class="bdg bdg-abs">절대</span>`;
-    if(co.gray)  bdg+=`<span class="bdg bdg-gray">회색</span>`;
-    if(co.gray3) bdg+=`<span class="bdg bdg-gray3">회색</span>`;
     if(co.track) div.classList.add('t-'+co.track);
+    if(co.gray||co.gray3) div.classList.add('t-gray');
     div.innerHTML=`<div class="mi-box">✓</div>
       <span class="mi-name">${co.n}</span>
       <span style="display:flex;gap:4px;align-items:center">${bdg}</span>
@@ -580,10 +581,9 @@ function renderTimeline(){
           let bdg='';
           if(co.csat)  bdg+=`<span class="bdg bdg-csat">수능</span>`;
           if(co.abs)   bdg+=`<span class="bdg bdg-abs">절대</span>`;
-          if(co.gray)  bdg+=`<span class="bdg bdg-gray">회색</span>`;
-          if(co.gray3) bdg+=`<span class="bdg bdg-gray3">회색</span>`;
           const trackCls=co?.track?' t-'+co.track:'';
-          html+=`<div class="sel-chip${trackCls}" onclick="toggle('${g.gid}','${name.replace(/'/g,"\\'")}')">
+          const grayCls=(co.gray||co.gray3)?' t-gray':'';
+          html+=`<div class="sel-chip${trackCls}${grayCls}" onclick="toggle('${g.gid}','${name.replace(/'/g,"\\'")}')">
             <span class="sel-chip-name">${name}</span>
             <span style="display:flex;gap:3px;align-items:center">${bdg}</span>
             <span class="sel-chip-c">${g.c}학점</span>
@@ -661,10 +661,9 @@ function renderDashboard(){
       let bdg='';
       if(co.csat)  bdg+=`<span class="bdg bdg-csat">수능</span>`;
       if(co.abs)   bdg+=`<span class="bdg bdg-abs">절대</span>`;
-      if(co.gray)  bdg+=`<span class="bdg bdg-gray">회색</span>`;
-      if(co.gray3) bdg+=`<span class="bdg bdg-gray3">회색</span>`;
       const tc=co.track?' t-'+co.track:'';
-      return `<div class="ci${isSel?' sel':''}${isDim?' dim':''}${tc}" onclick="toggle('${gid}','${co.n.replace(/'/g,"\\'")}')">
+      const gc=(co.gray||co.gray3)?' t-gray':'';
+      return `<div class="ci${isSel?' sel':''}${isDim?' dim':''}${tc}${gc}" onclick="toggle('${gid}','${co.n.replace(/'/g,"\\'")}')">
         <div class="ci-box">✓</div>
         <span class="ci-name">${co.n}</span>
         <div class="ci-badges">${bdg}</div>
