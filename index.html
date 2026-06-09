@@ -298,6 +298,16 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,'Noto San
   </div>
 </div>
 
+<!-- ── Course notification ── -->
+<div id="course-notif" style="display:none;position:fixed;bottom:80px;left:50%;transform:translateX(-50%);
+  background:#fff;border:1px solid #e5e7eb;border-radius:12px;padding:16px 20px;
+  box-shadow:0 4px 24px rgba(0,0,0,.14);z-index:400;min-width:280px;max-width:400px;text-align:center">
+  <div style="font-size:12px;color:#6b7280;margin-bottom:6px;font-weight:600">📚 과학 위계 안내</div>
+  <div id="course-notif-msg" style="font-size:13px;color:#111;line-height:1.5;margin-bottom:12px"></div>
+  <button onclick="document.getElementById('course-notif').style.display='none'"
+    style="background:#059669;color:#fff;border:none;border-radius:6px;padding:6px 20px;font-size:12px;cursor:pointer;font-weight:600">닫힘</button>
+</div>
+
 <!-- ── Modal ── -->
 <div class="modal-ov" id="modal" onclick="closeModal(event)">
   <div class="modal-sheet" onclick="event.stopPropagation()">
@@ -410,6 +420,19 @@ const GROUPS = {
   }
 };
 
+const GRAY3_MAX = 10;
+
+const NEXT_COURSE = {
+  '물리학':       '역학과 에너지',
+  '역학과 에너지': '전자기와 양자',
+  '화학':         '물질과 에너지',
+  '물질과 에너지': '화학 반응의 세계',
+  '생명과학':     '세포와 물질대사',
+  '세포와 물질대사':'생물의 유전',
+  '지구과학':     '지구시스템과학',
+  '지구시스템과학':'행성우주과학',
+};
+
 const SEM_ORDER = ['s1-1','s1-2','s2-1','s2-2','s3-1','s3-2'];
 const TOTAL = 174, REQ = 90, ELEC = 84, GRAY_MIN = 3;
 
@@ -471,6 +494,7 @@ function semCredits(semId){
 // ═══════════════════════════════════════
 function toggle(gid, name){
   const g=GROUPS[gid];
+  const co=g.courses.find(x=>x.n===name)||{};
   if(SEL[gid].has(name)){
     SEL[gid].delete(name);
   } else {
@@ -478,7 +502,13 @@ function toggle(gid, name){
       showToast(`최대 ${g.choose}개까지 선택할 수 있습니다.`);
       return;
     }
+    if(co.gray3 && gray3Count()>=GRAY3_MAX){
+      showToast(`3학년 회색 과목은 1·2학기 합산 최대 ${GRAY3_MAX}개까지 선택할 수 있습니다.`);
+      return;
+    }
     SEL[gid].add(name);
+    const next=NEXT_COURSE[name];
+    if(next) showCourseNotif(next);
   }
   saveState(); render();
   if(activeModal===gid) renderModalList(gid);
@@ -503,7 +533,7 @@ function renderModalList(gid){
   list.innerHTML='';
   g.courses.forEach(co=>{
     const isSel=SEL[gid].has(co.n);
-    const isDim=!isSel&&SEL[gid].size>=g.choose;
+    const isDim=!isSel&&(SEL[gid].size>=g.choose||(co.gray3&&gray3Count()>=GRAY3_MAX));
     const div=document.createElement('div');
     div.className='mi'+(isSel?' sel':'')+(isDim?' dim':'');
     div.onclick=()=>toggle(gid,co.n);
@@ -542,6 +572,11 @@ function showToast(msg){
   t.textContent=msg;t.style.opacity='1';
   clearTimeout(t._timer);
   t._timer=setTimeout(()=>t.style.opacity='0',2000);
+}
+
+function showCourseNotif(nextCourse){
+  document.getElementById('course-notif-msg').textContent=`다음 연계 수강 과목은 <${nextCourse}> 입니다`;
+  document.getElementById('course-notif').style.display='block';
 }
 
 // ═══════════════════════════════════════
@@ -624,7 +659,7 @@ function renderDashboard(){
   const g2=grayCount(), g3=gray3Count(), g3t=gray3Total();
   document.getElementById('dGray2').textContent=g2;
   document.getElementById('dGray3').textContent=g3;
-  document.getElementById('dGray3Tot').textContent=`(${g3t}개 중)`;
+  document.getElementById('dGray3Tot').textContent=`(최대 ${GRAY3_MAX}개)`;
 
   // Warnings
   const gray=grayCount();
@@ -665,7 +700,7 @@ function renderDashboard(){
 
     let courses=g.courses.map(co=>{
       const isSel=SEL[gid].has(co.n);
-      const isDim=!isSel&&maxed;
+      const isDim=!isSel&&(maxed||(co.gray3&&gray3Count()>=GRAY3_MAX));
       let bdg='';
       if(co.csat)  bdg+=`<span class="bdg bdg-csat">수능</span>`;
       if(co.abs)   bdg+=`<span class="bdg bdg-abs">절대</span>`;
