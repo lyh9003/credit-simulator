@@ -211,8 +211,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,'Noto San
 <!-- ── Tab Nav ── -->
 <nav class="tab-nav">
   <div class="tab-nav-inner">
-    <button class="tab-btn active" onclick="switchTab(this,'timeline')">📅 타임라인</button>
-    <button class="tab-btn" onclick="switchTab(this,'dashboard')">📊 대시보드</button>
+    <button class="tab-btn active" onclick="switchTab(this,'dashboard')">📊 대시보드</button>
+    <button class="tab-btn" onclick="switchTab(this,'timeline')">📅 타임라인</button>
     <button class="tab-btn" onclick="switchTab(this,'schedule')">📋 편제표</button>
   </div>
 </nav>
@@ -221,7 +221,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,'Noto San
 <div class="wrap">
 
   <!-- TIMELINE -->
-  <div id="tab-timeline" class="tab-panel active">
+  <div id="tab-timeline" class="tab-panel">
     <div class="tl-scroll">
       <div class="tl-grid" id="tlGrid"></div>
     </div>
@@ -235,7 +235,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,'Noto San
   </div>
 
   <!-- DASHBOARD -->
-  <div id="tab-dashboard" class="tab-panel">
+  <div id="tab-dashboard" class="tab-panel active">
     <div class="db-layout">
       <div class="db-left">
         <!-- Ring -->
@@ -388,7 +388,7 @@ const GROUPS = {
     sem:'s3-1', label:'3학년 1학기 선택 (4학점)', short:'4학점 택1', choose:1, c:4,
     courses:[
       {n:'생활과학 탐구'},{n:'소프트웨어와 생활'},{n:'창의 공학 설계'},
-      {n:'일본 문화'},{n:'중국 문화'},{n:'한문'}
+      {n:'일본 문화'},{n:'중국 문화'},{n:'한문',gray3:1}
     ]
   },
   'g3-1-2':{
