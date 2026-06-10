@@ -670,10 +670,8 @@ function renderDashboard(){
     warns.push({cls:'ok',txt:`✓ 2학년 회색 과목 ${gray}개 선택 완료`});
   if(g3>GRAY3_MAX)
     warns.push({cls:'err',txt:`✕ 3학년 회색 과목 ${g3}/${GRAY3_MAX}개 — 1·2학기 합산 최대 ${GRAY3_MAX}개 초과`});
-  else if(g3===GRAY3_MAX)
-    warns.push({cls:'ok',txt:`✓ 3학년 회색 과목 ${g3}/${GRAY3_MAX}개 선택 완료`});
   else
-    warns.push({cls:'',txt:`⚠ 3학년 회색 과목 ${g3}/${GRAY3_MAX}개 — 1·2학기 합산 최대 ${GRAY3_MAX}개 이하 선택`});
+    warns.push({cls:'ok',txt:`✓ 3학년 회색 과목 ${g3}/${GRAY3_MAX}개 이하 — 정상`});
   Object.entries(GROUPS).forEach(([gid,g])=>{
     const s=SEL[gid].size;
     if(s>g.choose) warns.push({cls:'err',txt:`✕ ${g.label}: ${s}개 선택됨 (최대 ${g.choose}개)`});
