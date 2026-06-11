@@ -181,7 +181,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,'Noto San
   <div class="hd-inner">
     <div>
       <div class="hd-title">고교학점제 시뮬레이터</div>
-      <div class="hd-sub">영덕고 2026학년도 입학생 편제표</div>
+      <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+        <div class="hd-sub">영덕고 2026학년도 입학생 편제표</div>
+        <div class="hd-sub" id="lastUpdated" style="color:#d1d5db"></div>
+      </div>
     </div>
     <div class="hd-stats">
       <div class="hd-stat">
@@ -431,6 +434,7 @@ const GROUPS = {
   }
 };
 
+const LAST_UPDATED = '2026-06-11 21:26';
 const GRAY3_MAX = 10;
 
 const MUTUAL_EXCL = {
@@ -618,6 +622,7 @@ function renderHeader(){
   document.getElementById('hRem').textContent=rem;
   document.getElementById('hBar').style.width=pct+'%';
   document.getElementById('hPct').textContent=pct+'% 완료';
+  document.getElementById('lastUpdated').textContent='마지막 업데이트 : '+LAST_UPDATED;
 }
 
 // ═══════════════════════════════════════
