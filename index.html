@@ -434,7 +434,6 @@ const GROUPS = {
   }
 };
 
-const LAST_UPDATED = '2026-06-11 21:26';
 const GRAY3_MAX = 10;
 
 const MUTUAL_EXCL = {
@@ -622,7 +621,19 @@ function renderHeader(){
   document.getElementById('hRem').textContent=rem;
   document.getElementById('hBar').style.width=pct+'%';
   document.getElementById('hPct').textContent=pct+'% 완료';
-  document.getElementById('lastUpdated').textContent='마지막 업데이트 : '+LAST_UPDATED;
+  // 최초 1회만 API 호출
+  if(!document.getElementById('lastUpdated').dataset.loaded){
+    document.getElementById('lastUpdated').dataset.loaded='1';
+    fetch('https://api.github.com/repos/lyh9003/credit-simulator/commits/main')
+      .then(r=>r.json())
+      .then(d=>{
+        const dt=new Date(new Date(d.commit.committer.date).getTime()+9*3600000);
+        const p=n=>String(n).padStart(2,'0');
+        const s=`${dt.getUTCFullYear()}-${p(dt.getUTCMonth()+1)}-${p(dt.getUTCDate())} ${p(dt.getUTCHours())}:${p(dt.getUTCMinutes())}`;
+        document.getElementById('lastUpdated').textContent='마지막 업데이트 : '+s;
+      })
+      .catch(()=>{});
+  }
 }
 
 // ═══════════════════════════════════════
