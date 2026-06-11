@@ -354,8 +354,8 @@ const GROUPS = {
       {n:'세계사'},{n:'사회와 문화'},{n:'현대사회와 윤리'},
       {n:'여행지리',abs:1},{n:'금융과 경제생활',abs:1},
       {n:'물리학',track:'phys'},{n:'화학',track:'chem'},{n:'생명과학',track:'bio'},{n:'지구과학',track:'earth'},
-      {n:'일본어',gray:1},{n:'중국어',gray:1},{n:'언어생활과 한자',gray:1},
-      {n:'기술·가정',gray:1},{n:'정보',gray:1},{n:'음악 연주와 창작'},{n:'미술 창작'}
+      {n:'일본어',gray:1,csat:1},{n:'중국어',gray:1,csat:1},{n:'언어생활과 한자',gray:1},
+      {n:'기술·가정',gray:1},{n:'정보',gray:1},{n:'음악 연주와 창작',abs:1},{n:'미술 창작',abs:1}
     ]
   },
   'g2-2':{
@@ -373,7 +373,7 @@ const GROUPS = {
     sem:'s3-1', label:'3학년 1학기 선택 (3학점)', short:'3학점 택7', choose:7, c:3,
     courses:[
       {n:'독서와 작문',csat:1,gray3:1},{n:'확률과 통계',csat:1,gray3:1},
-      {n:'영어 독해와 작문',gray3:1},{n:'독서 토론과 글쓰기',abs:1,gray3:1},
+      {n:'영어 독해와 작문',gray3:1},{n:'독서 토론과 글쓰기',gray3:1},
       {n:'언어생활 탐구',gray3:1},{n:'직무 의사소통',gray3:1},
       {n:'심화 영어',gray3:1},{n:'영미 문학 읽기',gray3:1},{n:'직무 영어',gray3:1},
       {n:'미적분Ⅱ',gray3:1},{n:'인공지능 수학',gray3:1},{n:'수학과제 탐구',gray3:1},
@@ -388,12 +388,12 @@ const GROUPS = {
     sem:'s3-1', label:'3학년 1학기 선택 (4학점)', short:'4학점 택1', choose:1, c:4,
     courses:[
       {n:'생활과학 탐구'},{n:'소프트웨어와 생활'},{n:'창의 공학 설계'},
-      {n:'일본 문화'},{n:'중국 문화'},{n:'한문',gray3:1}
+      {n:'일본 문화'},{n:'중국 문화'},{n:'한문',gray3:1,csat:1}
     ]
   },
   'g3-1-2':{
     sem:'s3-1', label:'3학년 1학기 선택 (2학점)', short:'2학점 택1', choose:1, c:2,
-    courses:[{n:'음악 감상과 비평'},{n:'미술 감상과 비평'}]
+    courses:[{n:'음악 감상과 비평',abs:1},{n:'미술 감상과 비평',abs:1}]
   },
   'g3-2-3':{
     sem:'s3-2', label:'3학년 2학기 선택 (3학점)', short:'3학점 택7', choose:7, c:3,
@@ -411,16 +411,21 @@ const GROUPS = {
     sem:'s3-2', label:'3학년 2학기 선택 (4학점)', short:'4학점 택1', choose:1, c:4,
     courses:[
       {n:'지식 재산 일반'},{n:'아동발달과 부모'},{n:'데이터 과학'},
-      {n:'관광 중국어'},{n:'관광 일본어'}
+      {n:'관광 중국어'},{n:'관광 일본어'},{n:'한문',gray3:1,csat:1}
     ]
   },
   'g3-2-2':{
     sem:'s3-2', label:'3학년 2학기 선택 (2학점)', short:'2학점 택1', choose:1, c:2,
-    courses:[{n:'음악과 미디어'},{n:'미술과 매체'}]
+    courses:[{n:'음악과 미디어',abs:1},{n:'미술과 매체',abs:1}]
   }
 };
 
 const GRAY3_MAX = 10;
+
+const MUTUAL_EXCL = {
+  'g3-1-4:한문': {gid:'g3-2-4', n:'한문'},
+  'g3-2-4:한문': {gid:'g3-1-4', n:'한문'},
+};
 
 const NEXT_COURSE = {
   '물리학':       '역학과 에너지',
@@ -506,6 +511,11 @@ function toggle(gid, name){
       showToast(`3학년 회색 과목은 1·2학기 합산 최대 ${GRAY3_MAX}개까지 선택할 수 있습니다.`);
       return;
     }
+    const mex=MUTUAL_EXCL[`${gid}:${name}`];
+    if(mex && SEL[mex.gid].has(mex.n)){
+      showToast(`'${name}'은 1·2학기 중 한 학기만 선택할 수 있습니다.`);
+      return;
+    }
     SEL[gid].add(name);
     const next=NEXT_COURSE[name];
     if(next) showCourseNotif(next);
@@ -533,7 +543,9 @@ function renderModalList(gid){
   list.innerHTML='';
   g.courses.forEach(co=>{
     const isSel=SEL[gid].has(co.n);
-    const isDim=!isSel&&(SEL[gid].size>=g.choose||(co.gray3&&gray3Count()>=GRAY3_MAX));
+    const mex=MUTUAL_EXCL[`${gid}:${co.n}`];
+    const mexBlocked=mex&&SEL[mex.gid].has(mex.n);
+    const isDim=!isSel&&(SEL[gid].size>=g.choose||(co.gray3&&gray3Count()>=GRAY3_MAX)||mexBlocked);
     const div=document.createElement('div');
     div.className='mi'+(isSel?' sel':'')+(isDim?' dim':'');
     div.onclick=()=>toggle(gid,co.n);
@@ -704,7 +716,9 @@ function renderDashboard(){
 
     let courses=g.courses.map(co=>{
       const isSel=SEL[gid].has(co.n);
-      const isDim=!isSel&&(maxed||(co.gray3&&gray3Count()>=GRAY3_MAX));
+      const mex=MUTUAL_EXCL[`${gid}:${co.n}`];
+      const mexBlocked=mex&&SEL[mex.gid].has(mex.n);
+      const isDim=!isSel&&(maxed||(co.gray3&&gray3Count()>=GRAY3_MAX)||mexBlocked);
       let bdg='';
       if(co.csat)  bdg+=`<span class="bdg bdg-csat">수능</span>`;
       if(co.abs)   bdg+=`<span class="bdg bdg-abs">절대</span>`;
