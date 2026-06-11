@@ -63,6 +63,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,'Noto San
 .bdg{font-size:9px;padding:1px 5px;border-radius:3px;font-weight:700;flex-shrink:0;white-space:nowrap}
 .bdg-csat{background:#fef3c7;color:#92400e}
 .bdg-abs{background:#fee2e2;color:#991b1b}
+.bdg-tier3{background:#ede9fe;color:#5b21b6}
 .bdg-gray{background:#e5e7eb;color:#374151}
 .bdg-gray3{background:#e5e7eb;color:#374151}
 /* 과학 계열 트랙 배경색 */
@@ -355,7 +356,7 @@ const GROUPS = {
       {n:'여행지리',abs:1},{n:'금융과 경제생활',abs:1},
       {n:'물리학',track:'phys'},{n:'화학',track:'chem'},{n:'생명과학',track:'bio'},{n:'지구과학',track:'earth'},
       {n:'일본어',gray:1,csat:1},{n:'중국어',gray:1,csat:1},{n:'언어생활과 한자',gray:1},
-      {n:'기술·가정',gray:1},{n:'정보',gray:1},{n:'음악 연주와 창작',abs:1},{n:'미술 창작',abs:1}
+      {n:'기술·가정',gray:1},{n:'정보',gray:1},{n:'음악 연주와 창작',tier3:1},{n:'미술 창작',tier3:1}
     ]
   },
   'g2-2':{
@@ -393,7 +394,7 @@ const GROUPS = {
   },
   'g3-1-2':{
     sem:'s3-1', label:'3학년 1학기 선택 (2학점)', short:'2학점 택1', choose:1, c:2,
-    courses:[{n:'음악 감상과 비평',abs:1},{n:'미술 감상과 비평',abs:1}]
+    courses:[{n:'음악 감상과 비평',tier3:1},{n:'미술 감상과 비평',tier3:1}]
   },
   'g3-2-3':{
     sem:'s3-2', label:'3학년 2학기 선택 (3학점)', short:'3학점 택7', choose:7, c:3,
@@ -416,7 +417,7 @@ const GROUPS = {
   },
   'g3-2-2':{
     sem:'s3-2', label:'3학년 2학기 선택 (2학점)', short:'2학점 택1', choose:1, c:2,
-    courses:[{n:'음악과 미디어',abs:1},{n:'미술과 매체',abs:1}]
+    courses:[{n:'음악과 미디어',tier3:1},{n:'미술과 매체',tier3:1}]
   }
 };
 
@@ -552,6 +553,7 @@ function renderModalList(gid){
     let bdg='';
     if(co.csat)  bdg+=`<span class="bdg bdg-csat">수능</span>`;
     if(co.abs)   bdg+=`<span class="bdg bdg-abs">절대</span>`;
+    if(co.tier3) bdg+=`<span class="bdg bdg-tier3">3단계</span>`;
     if(co.track) div.classList.add('t-'+co.track);
     if(co.gray||co.gray3) div.classList.add('t-gray');
     div.innerHTML=`<div class="mi-box">✓</div>
@@ -636,6 +638,7 @@ function renderTimeline(){
           let bdg='';
           if(co.csat)  bdg+=`<span class="bdg bdg-csat">수능</span>`;
           if(co.abs)   bdg+=`<span class="bdg bdg-abs">절대</span>`;
+    if(co.tier3) bdg+=`<span class="bdg bdg-tier3">3단계</span>`;
           const trackCls=co?.track?' t-'+co.track:'';
           const grayCls=(co.gray||co.gray3)?' t-gray':'';
           html+=`<div class="sel-chip${trackCls}${grayCls}" onclick="toggle('${g.gid}','${name.replace(/'/g,"\\'")}')">
@@ -722,6 +725,7 @@ function renderDashboard(){
       let bdg='';
       if(co.csat)  bdg+=`<span class="bdg bdg-csat">수능</span>`;
       if(co.abs)   bdg+=`<span class="bdg bdg-abs">절대</span>`;
+    if(co.tier3) bdg+=`<span class="bdg bdg-tier3">3단계</span>`;
       const tc=co.track?' t-'+co.track:'';
       const gc=(co.gray||co.gray3)?' t-gray':'';
       return `<div class="ci${isSel?' sel':''}${isDim?' dim':''}${tc}${gc}" onclick="toggle('${gid}','${co.n.replace(/'/g,"\\'")}')">
